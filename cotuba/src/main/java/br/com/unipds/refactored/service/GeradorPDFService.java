@@ -1,7 +1,9 @@
-package br.com.unipds.refactored.code.service;
+package br.com.unipds.refactored.service;
 
 import java.nio.file.Files;
 import java.util.List;
+
+import javax.enterprise.context.ApplicationScoped;
 
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -14,11 +16,13 @@ import com.itextpdf.layout.element.IBlockElement;
 import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.properties.AreaBreakType;
 
-import br.com.unipds.refactored.code.entities.Ebook;
+import br.com.unipds.refactored.entities.Ebook;
+import br.com.unipds.refactored.interfaces.GeradorEbook;
 
-public class GeradorPDFService {
+@ApplicationScoped
+public class GeradorPDFService implements GeradorEbook{
 
-	public void gerarPDF(Ebook ebook) {
+	public void gerar(Ebook ebook) {
 		
 		 try (var writer = new PdfWriter(Files.newOutputStream(ebook.getArquivoDeSaida()));
             var pdf = new PdfDocument(writer);

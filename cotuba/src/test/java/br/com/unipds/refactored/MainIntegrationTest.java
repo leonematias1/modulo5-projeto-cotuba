@@ -1,15 +1,7 @@
-package br.com.unipds.refactored.code;
+package br.com.unipds.refactored;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.epub.EpubReader;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -17,10 +9,20 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-class MainRefactoredTest {
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
+
+import nl.siegmann.epublib.domain.Book;
+import nl.siegmann.epublib.epub.EpubReader;
+
+class MainIntegrationTest {
 
     @TempDir
     Path diretorioDosMd;
@@ -68,7 +70,7 @@ class MainRefactoredTest {
     }
 
     @Test
-    @DisplayName("Deve gerar o arquivo EPUB corretamente e conter o HTML renderizado.")
+    @DisplayName("Deve gerar o arquivo EPUB corretamente e conter o HTML renderizado")
     void deveGerarEpubComSucesso() throws Exception {
         Path arquivoSaida = diretorioDosMd.resolve("saida.epub");
 
@@ -95,22 +97,6 @@ class MainRefactoredTest {
     }
 
     @Test
-    @DisplayName("Deve exibir erro e não gerar arquivo quando não há arquivos .md.")
-    void deveInformarErroQuandoNaoHaArquivosMd() throws Exception {
-        Files.delete(arquivoMd);
-        Path arquivoSaida = diretorioDosMd.resolve("saida.pdf");
-
-        new Main().main(new String[]{
-                "-d", diretorioDosMd.toString(),
-                "-f", "pdf",
-                "-o", arquivoSaida.toString()
-        });
-
-        assertThat(errContent.toString()).contains("Não foram encontrados capítulos");
-        assertThat(arquivoSaida).doesNotExist();
-    }
-
-    @Test
     @DisplayName("Deve rejeitar um formato que não existe.")
     void deveRejeitarFormatoInvalido() {
         Path arquivoSaida = diretorioDosMd.resolve("saida.mobi");
@@ -125,4 +111,21 @@ class MainRefactoredTest {
 
         assertThat(arquivoSaida).doesNotExist();
     }
+
+    @Test
+    @DisplayName("Deve exibir erro e não gerar arquivo quando não há arquivos .md.")
+    void deveInformarErroQuandoNaoHaArquivosMd() throws Exception {
+        Files.deleteIfExists(arquivoMd);
+        Path arquivoSaida = diretorioDosMd.resolve("saida.pdf");
+
+        new Main().main(new String[]{
+                "-d", diretorioDosMd.toString(),
+                "-f", "pdf",
+                "-o", arquivoSaida.toString()
+        });
+
+        assertThat(errContent.toString()).contains("Não foram encontrados capítulos");
+        assertThat(arquivoSaida).doesNotExist();
+    }
+
 }

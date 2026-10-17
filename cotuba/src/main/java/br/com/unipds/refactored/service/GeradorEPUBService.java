@@ -1,12 +1,12 @@
-package br.com.unipds.refactored.code.service;
+package br.com.unipds.refactored.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 
-import br.com.unipds.refactored.code.entities.Capitulo;
-import br.com.unipds.refactored.code.entities.Ebook;
-import br.com.unipds.refactored.code.entities.ProgramSettings;
+import javax.enterprise.context.ApplicationScoped;
+
+import br.com.unipds.refactored.entities.Ebook;
+import br.com.unipds.refactored.interfaces.GeradorEbook;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.GuideReference;
@@ -14,9 +14,10 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubWriter;
 import nl.siegmann.epublib.service.MediatypeService;
 
-public class GeradorEPUBService {
+@ApplicationScoped
+public class GeradorEPUBService implements GeradorEbook{
 
-	public void gerarEPUB(Ebook ebook) {
+	public void gerar(Ebook ebook) {
 		try {
            var epub = new Book();
            

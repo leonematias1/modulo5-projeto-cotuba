@@ -1,8 +1,8 @@
-package br.com.unipds.refactored.code.entities;
+package br.com.unipds.refactored.entities;
 
 import java.nio.file.Path;
 
-import br.com.unipds.refactored.code.enums.EbookTypes;
+import br.com.unipds.refactored.enums.EbookTypes;
 
 public class ProgramSettings {
 

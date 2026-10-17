@@ -1,4 +1,4 @@
-package br.com.unipds.refactored.code.service;
+package br.com.unipds.refactored.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+
+import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -15,10 +17,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import br.com.unipds.refactored.code.entities.ProgramSettings;
-import br.com.unipds.refactored.code.enums.EbookTypes;
+import br.com.unipds.refactored.entities.ProgramSettings;
+import br.com.unipds.refactored.enums.EbookTypes;
 
-
+@ApplicationScoped
 public class FilterOptionsService {
 
 	public ProgramSettings doReturnExecOptions(String[] args) {

@@ -1,4 +1,4 @@
-package br.com.unipds.refactored.code.entities;
+package br.com.unipds.refactored.entities;
 
 import java.nio.file.Path;
 

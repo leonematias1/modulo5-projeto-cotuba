@@ -1,8 +1,11 @@
-package br.com.unipds.refactored.code.service;
+package br.com.unipds.refactored.service;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Heading;
@@ -11,16 +14,13 @@ import org.commonmark.node.Text;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
-import br.com.unipds.refactored.code.entities.Capitulo;
-import br.com.unipds.refactored.code.entities.ProgramSettings;
-import br.com.unipds.refactored.code.repository.RenderizadorMarkdownRepository;
+import br.com.unipds.refactored.entities.Capitulo;
+import br.com.unipds.refactored.entities.ProgramSettings;
 
+@ApplicationScoped
 public class RenderizadorMarkdownService {
 
-	
-	public List<Capitulo> doRenderMD(ProgramSettings settings) {
-		RenderizadorMarkdownRepository renderizadorMarkdownRepository = new RenderizadorMarkdownRepository();
-		List<Path> arquivosMD = renderizadorMarkdownRepository.doGetMarkDowns(settings);
+	public List<Capitulo> doRenderMD(List<Path> arquivosMD) {
         return arquivosMD.stream().map(arquivoMD -> {
         	Capitulo capitulo = new Capitulo();
             Parser parser = Parser.builder().build();

@@ -1,4 +1,4 @@
-package br.com.unipds.refactored.code.repository;
+package br.com.unipds.refactored.service;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -8,10 +8,15 @@ import java.nio.file.PathMatcher;
 import java.util.List;
 import java.util.stream.Stream;
 
-import br.com.unipds.refactored.code.entities.ProgramSettings;
+import javax.enterprise.context.ApplicationScoped;
 
-public class RenderizadorMarkdownRepository {
+import br.com.unipds.refactored.entities.ProgramSettings;
+import br.com.unipds.refactored.repository.RenderizadorMarkDownRepository;
 
+@ApplicationScoped
+public class RenderizadorMarkdownDiretorio implements RenderizadorMarkDownRepository {
+
+	@Override
 	public List<Path> doGetMarkDowns(ProgramSettings settings) {
 		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**/*.md");
         try (Stream<Path> streamMDs = Files.list(settings.getDiretorioDosMD())) {

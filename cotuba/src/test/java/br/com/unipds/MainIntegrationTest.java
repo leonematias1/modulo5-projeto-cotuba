@@ -13,6 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -24,25 +25,23 @@ class MainIntegrationTest {
     Path diretorioDosMd;
 
     private Path arquivoMd;
-
-    // Utilitários para capturar o System.err nativamente
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
+    private PrintStream capturedErr;
 
     @BeforeEach
     void setUp() throws Exception {
-        // Redireciona a saída de erro para conseguirmos validar nos testes
-        System.setErr(new PrintStream(errContent));
+        capturedErr = new PrintStream(errContent);
+        System.setErr(capturedErr);
 
-        // Cria o arquivo de teste
         arquivoMd = diretorioDosMd.resolve("01-introducao.md");
         Files.writeString(arquivoMd, "# Capítulo Teste\n\nEste é um conteúdo de um arquivo Markdown.");
     }
 
     @AfterEach
     void tearDown() {
-        // Restaura a saída padrão de erro do Java
         System.setErr(originalErr);
+        capturedErr.close();
     }
 
     @Test
@@ -68,7 +67,7 @@ class MainIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve gerar o arquivo EPUB corretamente e conter o HTML renderizado")
+    @DisplayName("Deve gerar o arquivo EPUB corretamente e conter o HTML renderizado.")
     void deveGerarEpubComSucesso() throws Exception {
         Path arquivoSaida = diretorioDosMd.resolve("saida.epub");
 
@@ -81,11 +80,14 @@ class MainIntegrationTest {
         assertThat(exitCode).isEqualTo(0);
         assertThat(arquivoSaida).exists().isRegularFile();
 
-        EpubReader epubReader = new EpubReader();
-        Book epubLido = epubReader.readEpub(Files.newInputStream(arquivoSaida));
+        Book epubLido;
+        try (var entradaEpub = Files.newInputStream(arquivoSaida)) {
+            epubLido = new EpubReader().readEpub(entradaEpub);
+        }
 
-        byte[] dadosDoHtml = epubLido.getSpine().getResource(0).getData();
-        String htmlDoCapitulo = new String(dadosDoHtml);
+        String htmlDoCapitulo = new String(
+                epubLido.getSpine().getResource(0).getData(),
+                StandardCharsets.UTF_8);
 
         assertThat(htmlDoCapitulo)
                 .contains("<h1>Capítulo Teste</h1>")
@@ -93,7 +95,7 @@ class MainIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve retornar status 1 e exibir erro caso o formato seja inválido")
+    @DisplayName("Deve retornar status 1 e exibir erro caso o formato seja inválido.")
     void deveFalharEEncerrarQuandoFormatoEhInvalido() {
         Path arquivoSaida = diretorioDosMd.resolve("saida.mobi");
 
@@ -109,9 +111,9 @@ class MainIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve retornar status 1 e exibir erro caso diretório não tenha arquivos .md")
+    @DisplayName("Deve retornar status 1 e exibir erro caso o diretório não tenha arquivos .md.")
     void deveFalharEEncerrarQuandoNaoHaArquivosMd() throws Exception {
-        Files.deleteIfExists(arquivoMd); // Deleta o arquivo para simular diretório vazio
+        Files.deleteIfExists(arquivoMd);
         Path arquivoSaida = diretorioDosMd.resolve("saida.pdf");
 
         int exitCode = new Main().executar(new String[]{
@@ -123,14 +125,13 @@ class MainIntegrationTest {
 
         assertThat(exitCode).isEqualTo(1);
         assertThat(errContent.toString()).contains("Não foram encontrados capítulos");
+        assertThat(arquivoSaida).doesNotExist();
     }
 
     @Test
-    @DisplayName("Deve acionar a ajuda do CLI e encerrar em caso de argumento desconhecido")
+    @DisplayName("Deve acionar a ajuda do CLI e encerrar em caso de argumento desconhecido.")
     void deveAcionarAjudaEEncerrarAoPassarArgumentoInvalido() {
-        int exitCode = new Main().executar(new String[]{
-                "-x"
-        });
+        int exitCode = new Main().executar(new String[]{"-x"});
 
         assertThat(exitCode).isEqualTo(1);
         assertThat(errContent.toString()).contains("Unrecognized option: -x");
