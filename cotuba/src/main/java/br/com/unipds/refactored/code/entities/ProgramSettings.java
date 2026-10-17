@@ -1,12 +1,14 @@
-package br.com.unipds.refactored.code;
+package br.com.unipds.refactored.code.entities;
 
 import java.nio.file.Path;
 
-public class ProgramOptions {
+import br.com.unipds.refactored.code.enums.EbookTypes;
+
+public class ProgramSettings {
 
 	private Path diretorioDosMD;
 	
-	private String formato;
+	private EbookTypes formato;
 	
 	private String nomeDoArquivoDeSaidaDoEbook;
 	
@@ -14,7 +16,7 @@ public class ProgramOptions {
 	
 	private boolean modoVerboso;
 
-	public ProgramOptions(Path diretorioDosMD, String formato, String nomeDoArquivoDeSaidaDoEbook,
+	public ProgramSettings(Path diretorioDosMD, EbookTypes formato, String nomeDoArquivoDeSaidaDoEbook,
 			Path arquivoDeSaida, boolean modoVerboso) {
 		super();
 		this.diretorioDosMD = diretorioDosMD;
@@ -32,11 +34,11 @@ public class ProgramOptions {
 		this.diretorioDosMD = diretorioDosMD;
 	}
 
-	public String getFormato() {
+	public EbookTypes getFormato() {
 		return formato;
 	}
 
-	public void setFormato(String nomeDoFormatoDoEbook) {
+	public void setFormato(EbookTypes nomeDoFormatoDoEbook) {
 		this.formato = nomeDoFormatoDoEbook;
 	}
 

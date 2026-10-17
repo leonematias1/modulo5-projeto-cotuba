@@ -1,4 +1,4 @@
-package br.com.unipds.refactored.code;
+package br.com.unipds.refactored.code.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +15,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import br.com.unipds.refactored.code.entities.ProgramSettings;
+import br.com.unipds.refactored.code.enums.EbookTypes;
 
-public class FilterOptions {
 
-	public ProgramOptions doReturnExecOptions(String[] args) {
-		var options = new Options();
+public class FilterOptionsService {
+
+	public ProgramSettings doReturnExecOptions(String[] args) {
+		Options options = new Options();
 		var opcaoDeDiretorioDosMD = new Option("d", "dir", true, "Diretório que contém os arquivos md. Default: diretório atual.");
 		options.addOption(opcaoDeDiretorioDosMD);
 		var opcaoDeFormatoDoEbook = new Option("f", "format", true, "Formato de saída do ebook. Pode ser: pdf ou epub. Default: pdf");
@@ -35,7 +38,7 @@ public class FilterOptions {
 		try {
 			CommandLine cmd = cmdParser.parse(options, args);
 			Path diretorioDosMD;
-	        String formato;
+			EbookTypes formato;
 	        Path arquivoDeSaida;
 	        boolean modoVerboso = false;
 	        String nomeDoDiretorioDosMD = cmd.getOptionValue("dir");
@@ -51,15 +54,15 @@ public class FilterOptions {
 	        
             String nomeDoFormatoDoEbook = cmd.getOptionValue("format");
             if (nomeDoFormatoDoEbook != null)
-                formato = nomeDoFormatoDoEbook.toLowerCase();
+                formato = EbookTypes.valueOf(nomeDoFormatoDoEbook.toUpperCase());
              else 
-                formato = "pdf";
+                formato = EbookTypes.PDF;
             
             String nomeDoArquivoDeSaidaDoEbook = cmd.getOptionValue("output");
             if (nomeDoArquivoDeSaidaDoEbook != null)
                 arquivoDeSaida = Paths.get(nomeDoArquivoDeSaidaDoEbook);
              else 
-                arquivoDeSaida = Paths.get("book." + formato.toLowerCase());
+                arquivoDeSaida = Paths.get("book." + formato);
             
             modoVerboso = cmd.hasOption("verbose");
             
@@ -77,7 +80,7 @@ public class FilterOptions {
                  return null;
             }
            
-			return new ProgramOptions(diretorioDosMD, formato, nomeDoArquivoDeSaidaDoEbook,arquivoDeSaida, modoVerboso);
+			return new ProgramSettings(diretorioDosMD, formato, nomeDoArquivoDeSaidaDoEbook,arquivoDeSaida, modoVerboso);
 		} catch (ParseException e) {
 	        System.err.println(e.getMessage());
 	        ajuda.printHelp("cotuba", options);
